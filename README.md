@@ -64,6 +64,28 @@
 ./gradlew connectedDebugAndroidTest
 ```
 
+## 发布 APK
+
+仓库提供 `Release APK` GitHub Actions 工作流。推送符合 `v*` 的版本标签（建议使用
+`v1.2.3` 形式），或在 Actions 页面手动输入版本标签，即会构建签名 APK、校验签名并将其附加到
+对应的 GitHub Release。工作流也会保留一份可直接下载的 Actions artifact。
+
+运行工作流前，需要在仓库的 Actions secrets 中配置：
+
+- `RELEASE_KEYSTORE_BASE64`：发布 keystore 文件的 Base64 编码（单行）。
+- `RELEASE_STORE_PASSWORD`：keystore 密码。
+- `RELEASE_KEY_ALIAS`：签名密钥别名。
+- `RELEASE_KEY_PASSWORD`：签名密钥密码。
+
+例如，可使用以下命令生成第一个 secret 的值：
+
+```bash
+base64 -w 0 release.keystore
+```
+
+发布密钥只会在构建期间写入 runner，并会在工作流结束时删除；请在安全位置长期备份原始
+keystore 和密码，以便后续版本持续使用同一签名。
+
 ## 项目结构
 
 ```text
