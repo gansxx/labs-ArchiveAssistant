@@ -48,12 +48,16 @@ generated the precise suppression rule required for that optional class.
 5. Added the generated R8 `-dontwarn` rule for PDFBox's optional JPEG-2000
    decoder. This does not disable shrinking or hide application classes.
 
-## Verification plan
+## Verification
 
-The source fix is pushed to `main` and the repaired workflow is dispatched
-again for `v0.0.1`. A successful run must complete these steps: configuration
-validation, `assembleRelease`, APK signature verification, artifact upload,
-and GitHub Release publication.
+The final workflow run, [#30732441588](https://github.com/gansxx/labs-ArchiveAssistant/actions/runs/30732441588), succeeded on commit `b53b5d9`.
+It completed configuration validation, `assembleRelease`, APK signature
+verification, artifact upload, and GitHub Release publication.
+
+Published release: [v0.0.1](https://github.com/gansxx/labs-ArchiveAssistant/releases/tag/v0.0.1)
+
+- Asset: `ArchiveAssistant-v0.0.1.apk` (132,837,690 bytes)
+- SHA-256: `5556d12c3401716a053961e678faa665a957407864c4ce5bd8daaee8f3c011a8`
 
 ## Operational note
 
