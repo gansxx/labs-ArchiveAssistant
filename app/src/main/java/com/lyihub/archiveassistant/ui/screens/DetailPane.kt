@@ -164,7 +164,6 @@ fun DetailPane(
       LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
-        overscrollEffect = null,
         contentPadding =
           PaddingValues(
             start = horizontalPadding,
@@ -251,7 +250,6 @@ private fun ArticleFilterBar(
     )
     LazyRow(
       modifier = Modifier.weight(1f),
-      overscrollEffect = null,
       horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
       items(tags) { tag ->

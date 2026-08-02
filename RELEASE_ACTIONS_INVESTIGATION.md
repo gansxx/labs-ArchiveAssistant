@@ -7,7 +7,7 @@
 - Trigger: manual dispatch for `v0.0.1`
 - Result: failure before the Gradle build step.
 
-## Root cause
+## Root causes
 
 The `Validate release configuration` step rejected the run because
 `RELEASE_KEYSTORE_BASE64` was not configured. The run log also showed the
@@ -21,6 +21,11 @@ Consequently, `Build signed release APK` was skipped. The GitHub Actions
 summary message **“No Gradle build results detected”** is a consequence of
 that early exit, not a Gradle, JDK, or dependency failure.
 
+After signing configuration was repaired, a second failure became visible in
+the real Gradle build. `:app:compileReleaseKotlin` failed because the Compose
+BOM pinned by the project does not provide the `overscrollEffect` named
+parameter used by `LazyColumn`, `LazyRow`, and `verticalScroll`.
+
 ## Remediation
 
 1. Created a dedicated RSA-4096 Android release signing key and configured
@@ -32,12 +37,16 @@ that early exit, not a Gradle, JDK, or dependency failure.
    on slower runners.
 3. Prepared the local release build environment with JDK 17, Android SDK
    Platform 36, Platform Tools, and Build Tools 36.0.0.
+4. Removed the three incompatible `overscrollEffect = null` arguments. This
+   retains the locked Compose dependency set and restores Kotlin compilation;
+   the standard platform overscroll behavior is used instead.
 
 ## Verification plan
 
-The repaired workflow is dispatched again for `v0.0.1`. A successful run must
-complete these steps: configuration validation, `assembleRelease`, APK
-signature verification, artifact upload, and GitHub Release publication.
+The source fix is pushed to `main` and the repaired workflow is dispatched
+again for `v0.0.1`. A successful run must complete these steps: configuration
+validation, `assembleRelease`, APK signature verification, artifact upload,
+and GitHub Release publication.
 
 ## Operational note
 

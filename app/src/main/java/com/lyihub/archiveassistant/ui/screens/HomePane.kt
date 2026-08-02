@@ -168,7 +168,7 @@ fun HomePane(
   Box(modifier = modifier.testTag("home-pane").fillMaxSize()) {
     Box(
       modifier =
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState(), overscrollEffect = null)
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ) {
       HomeContentColumn(
         modifier =
