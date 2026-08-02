@@ -16,6 +16,27 @@ android {
     version = release(36)
   }
 
+  val releaseStoreFile = providers.environmentVariable("RELEASE_STORE_FILE").orNull
+  val releaseStorePassword = providers.environmentVariable("RELEASE_STORE_PASSWORD").orNull
+  val releaseKeyAlias = providers.environmentVariable("RELEASE_KEY_ALIAS").orNull
+  val releaseKeyPassword = providers.environmentVariable("RELEASE_KEY_PASSWORD").orNull
+
+  signingConfigs {
+    if (
+      releaseStoreFile != null &&
+        releaseStorePassword != null &&
+        releaseKeyAlias != null &&
+        releaseKeyPassword != null
+    ) {
+      create("release") {
+        storeFile = file(releaseStoreFile)
+        storePassword = releaseStorePassword
+        keyAlias = releaseKeyAlias
+        keyPassword = releaseKeyPassword
+      }
+    }
+  }
+
   defaultConfig {
     applicationId = "com.lyihub.archiveassistant"
     minSdk = 31
@@ -29,6 +50,7 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = true
+      signingConfig = signingConfigs.findByName("release")
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro",
