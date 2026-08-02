@@ -26,6 +26,11 @@ the real Gradle build. `:app:compileReleaseKotlin` failed because the Compose
 BOM pinned by the project does not provide the `overscrollEffect` named
 parameter used by `LazyColumn`, `LazyRow`, and `verticalScroll`.
 
+A subsequent release build completed Kotlin compilation but R8 stopped on
+PDFBox's optional JPEG-2000 decoder (`com.gemalto.jp2.JP2Decoder`), which is
+not included in the `pdfbox-android` dependency. The Android Gradle Plugin
+generated the precise suppression rule required for that optional class.
+
 ## Remediation
 
 1. Created a dedicated RSA-4096 Android release signing key and configured
@@ -40,6 +45,8 @@ parameter used by `LazyColumn`, `LazyRow`, and `verticalScroll`.
 4. Removed the three incompatible `overscrollEffect = null` arguments. This
    retains the locked Compose dependency set and restores Kotlin compilation;
    the standard platform overscroll behavior is used instead.
+5. Added the generated R8 `-dontwarn` rule for PDFBox's optional JPEG-2000
+   decoder. This does not disable shrinking or hide application classes.
 
 ## Verification plan
 
