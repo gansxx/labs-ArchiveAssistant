@@ -7,11 +7,18 @@ import com.lyihub.archiveassistant.domain.KnowledgeItem
 import com.lyihub.archiveassistant.domain.Topic
 import kotlinx.coroutines.flow.firstOrNull
 
-class AppDataRepository(private val dataStore: DataStore<Preferences>) {
-  data class Snapshot(
-    val topics: AppDataPreferences.DecodeResult<List<Topic>>,
-    val items: AppDataPreferences.DecodeResult<List<KnowledgeItem>>,
-  )
+data class AppDataSnapshot(
+  val topics: AppDataPreferences.DecodeResult<List<Topic>>,
+  val items: AppDataPreferences.DecodeResult<List<KnowledgeItem>>,
+)
+
+interface AppDataSource {
+  suspend fun loadSnapshot(): AppDataSnapshot?
+
+  suspend fun saveAll(topics: List<Topic>, items: List<KnowledgeItem>)
+}
+
+class AppDataRepository(private val dataStore: DataStore<Preferences>) : AppDataSource {
 
   suspend fun loadTopics(): List<Topic> {
     val preferences = dataStore.data.firstOrNull() ?: return emptyList()
@@ -23,15 +30,15 @@ class AppDataRepository(private val dataStore: DataStore<Preferences>) {
     return AppDataPreferences.decodeItems(preferences)
   }
 
-  suspend fun loadSnapshot(): Snapshot? {
+  override suspend fun loadSnapshot(): AppDataSnapshot? {
     val preferences = dataStore.data.firstOrNull() ?: return null
-    return Snapshot(
+    return AppDataSnapshot(
       topics = AppDataPreferences.tryDecodeTopics(preferences),
       items = AppDataPreferences.tryDecodeItems(preferences),
     )
   }
 
-  suspend fun saveAll(topics: List<Topic>, items: List<KnowledgeItem>) {
+  override suspend fun saveAll(topics: List<Topic>, items: List<KnowledgeItem>) {
     dataStore.edit { preferences ->
       AppDataPreferences.encodeTopics(topics, preferences)
       AppDataPreferences.encodeItems(items, preferences)

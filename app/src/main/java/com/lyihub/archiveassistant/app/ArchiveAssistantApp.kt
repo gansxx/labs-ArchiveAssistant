@@ -26,7 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.lyihub.archiveassistant.data.AiEnginePresetRepository
 import com.lyihub.archiveassistant.data.AiEngineSettingsRepository
-import com.lyihub.archiveassistant.data.AppDataRepository
+import com.lyihub.archiveassistant.data.AppDataSource
 import com.lyihub.archiveassistant.data.OkHttpModelDownloadManager
 import com.lyihub.archiveassistant.domain.AiEnginePreset
 import com.lyihub.archiveassistant.domain.AiEngineSettings
@@ -58,7 +58,7 @@ fun ArchiveAssistantApp(
   stateStore: ArchiveAssistantStateStore? = null,
   aiSettingsRepository: AiEngineSettingsRepository? = null,
   aiPresetRepository: AiEnginePresetRepository? = null,
-  appDataRepository: AppDataRepository? = null,
+  appDataRepository: AppDataSource? = null,
 ) {
   val context = LocalContext.current
   val effectiveStateStore =

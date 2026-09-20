@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.lyihub.archiveassistant.data.AiEngineSettingsRepository
 import com.lyihub.archiveassistant.data.AppDataPreferences
-import com.lyihub.archiveassistant.data.AppDataRepository
+import com.lyihub.archiveassistant.data.AppDataSource
 import com.lyihub.archiveassistant.data.DefaultDocumentContentExtractor
 import com.lyihub.archiveassistant.data.DefaultWebPageContentFetcher
 import com.lyihub.archiveassistant.data.DocumentContentExtractionResult
@@ -58,7 +58,7 @@ class ArchiveAssistantStateStore(
       items = SampleKnowledgeData.items,
       aiSettings = SampleKnowledgeData.defaultAiEngineSettings,
     ),
-  private val appDataRepository: AppDataRepository? = null,
+  private val appDataRepository: AppDataSource? = null,
   private val aiSettingsRepository: AiEngineSettingsRepository? = null,
   private val localLlmEngine: LocalLlmEngine? = null,
   private val modelDownloadManager: ModelDownloadManager? = null,

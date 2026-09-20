@@ -24,7 +24,11 @@ import com.lyihub.archiveassistant.app.isMimeAllowed
 import com.lyihub.archiveassistant.data.AiEnginePresetRepository
 import com.lyihub.archiveassistant.data.AiEngineSettingsRepository
 import com.lyihub.archiveassistant.data.AppDataRepository
+import com.lyihub.archiveassistant.data.AppDataSource
+import com.lyihub.archiveassistant.data.CloudAppDataRepository
 import com.lyihub.archiveassistant.data.OkHttpModelDownloadManager
+import com.lyihub.archiveassistant.data.StorageBackend
+import com.lyihub.archiveassistant.data.SwitchableAppDataSource
 import com.lyihub.archiveassistant.service.LocalInferenceConnection
 import com.lyihub.archiveassistant.state.ArchiveAssistantStateStore
 import com.lyihub.archiveassistant.ui.components.ArchiveNoticeBanner
@@ -37,6 +41,7 @@ private val Context.appDataStore by preferencesDataStore(name = "app_data")
 
 class MainActivity : ComponentActivity() {
   private lateinit var stateStore: ArchiveAssistantStateStore
+  private lateinit var appDataSource: AppDataSource
   private var dragDropPermissions: DragAndDropPermissions? = null
   private val noticeMessage = mutableStateOf<String?>(null)
 
@@ -44,9 +49,10 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     val aiSettingsRepository = AiEngineSettingsRepository(aiEngineSettingsDataStore)
     val inferenceConnection = LocalInferenceConnection(this)
+    appDataSource = createAppDataSource()
     stateStore =
       ArchiveAssistantStateStore(
-        appDataRepository = AppDataRepository(appDataStore),
+        appDataRepository = appDataSource,
         aiSettingsRepository = aiSettingsRepository,
         modelDownloadManager = OkHttpModelDownloadManager(this),
         inferenceConnection = inferenceConnection,
@@ -62,9 +68,6 @@ class MainActivity : ComponentActivity() {
       val aiPresetRepository = remember {
         AiEnginePresetRepository(aiEngineSettingsDataStore)
       }
-      val appDataRepository = remember {
-        AppDataRepository(appDataStore)
-      }
       ArchiveAssistantTheme {
         var notice by remember { noticeMessage }
         LaunchedEffect(notice) {
@@ -78,7 +81,7 @@ class MainActivity : ComponentActivity() {
             stateStore = stateStore,
             aiSettingsRepository = aiSettingsRepository,
             aiPresetRepository = aiPresetRepository,
-            appDataRepository = appDataRepository,
+            appDataRepository = appDataSource,
           )
           ArchiveNoticeBanner(
             message = notice,
@@ -87,6 +90,27 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  private fun createAppDataSource(): AppDataSource {
+    val local = AppDataRepository(appDataStore)
+    val cloud =
+      if (BuildConfig.ARCHIVE_CLOUD_BASE_URL.isNotBlank() &&
+        BuildConfig.ARCHIVE_CLOUD_API_KEY.isNotBlank()
+      ) {
+        CloudAppDataRepository(
+          baseUrl = BuildConfig.ARCHIVE_CLOUD_BASE_URL,
+          workspaceId = BuildConfig.ARCHIVE_CLOUD_WORKSPACE_ID,
+          apiKey = BuildConfig.ARCHIVE_CLOUD_API_KEY,
+        )
+      } else {
+        null
+      }
+    val requestedBackend = StorageBackend.from(BuildConfig.ARCHIVE_DATA_BACKEND)
+    val initialBackend =
+      if (requestedBackend == StorageBackend.CLOUD && cloud != null) requestedBackend
+      else StorageBackend.LOCAL
+    return SwitchableAppDataSource(local, cloud, initialBackend)
   }
 
   private fun handleDragEvent(event: DragEvent): Boolean {

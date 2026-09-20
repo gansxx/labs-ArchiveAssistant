@@ -44,6 +44,10 @@ object AppDataPreferences {
   }
 
   fun encodeTopics(topics: List<Topic>, preferences: MutablePreferences) {
+    preferences[TopicsKey] = encodeTopicsJson(topics)
+  }
+
+  fun encodeTopicsJson(topics: List<Topic>): String {
     val array = JSONArray()
     topics.forEach { topic ->
       array.put(
@@ -56,7 +60,7 @@ object AppDataPreferences {
         }
       )
     }
-    preferences[TopicsKey] = array.toString()
+    return array.toString()
   }
 
   fun decodeItems(preferences: Preferences): List<KnowledgeItem> {
@@ -81,6 +85,10 @@ object AppDataPreferences {
   }
 
   fun encodeItems(items: List<KnowledgeItem>, preferences: MutablePreferences) {
+    preferences[ItemsKey] = encodeItemsJson(items)
+  }
+
+  fun encodeItemsJson(items: List<KnowledgeItem>): String {
     val array = JSONArray()
     items.forEach { item ->
       array.put(
@@ -100,10 +108,10 @@ object AppDataPreferences {
         }
       )
     }
-    preferences[ItemsKey] = array.toString()
+    return array.toString()
   }
 
-  private fun parseTopics(json: String): List<Topic> {
+  fun parseTopics(json: String): List<Topic> {
     val array = JSONArray(json)
     return (0 until array.length()).map { i ->
       val obj = array.getJSONObject(i)
@@ -117,7 +125,7 @@ object AppDataPreferences {
     }
   }
 
-  private fun parseItems(json: String): List<KnowledgeItem> {
+  fun parseItems(json: String): List<KnowledgeItem> {
     val array = JSONArray(json)
     return (0 until array.length()).map { i ->
       val obj = array.getJSONObject(i)

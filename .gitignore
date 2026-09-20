@@ -4,6 +4,12 @@
 
 # Local configuration
 local.properties
+server/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
 
 # Android Studio / IntelliJ
 *.iml
@@ -20,6 +26,7 @@ captures/
 # Agent workspace artifacts
 .omo/
 .sisyphus/
+test-artifacts/screenshots/
 
 # Kotlin
 .kotlin/

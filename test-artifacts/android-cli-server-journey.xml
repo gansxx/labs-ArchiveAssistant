@@ -1,0 +1,14 @@
+<journey name="Android CLI cloud server interaction">
+  <description>
+    Verify that the Android app loads PostgreSQL seed data through the ArchiveAssistant server.
+  </description>
+  <actions>
+    <action>Verify that the ArchiveAssistant home screen is visible</action>
+    <action>Tap the 工 · 营造 topic</action>
+    <action>Swipe up slowly on the item grid</action>
+    <action>Verify that 云端联调验证文档 is visible</action>
+    <action>Tap 云端联调验证文档</action>
+    <action>Swipe left slowly on the opened 奏章 to reveal its contents</action>
+    <action>Verify that 来自 PostgreSQL 的 Android CLI 端到端测试数据 is visible</action>
+  </actions>
+</journey>

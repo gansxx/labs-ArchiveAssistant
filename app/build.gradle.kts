@@ -20,6 +20,11 @@ android {
   val releaseStorePassword = providers.environmentVariable("RELEASE_STORE_PASSWORD").orNull
   val releaseKeyAlias = providers.environmentVariable("RELEASE_KEY_ALIAS").orNull
   val releaseKeyPassword = providers.environmentVariable("RELEASE_KEY_PASSWORD").orNull
+  fun archiveConfig(name: String, default: String = ""): String =
+    providers.gradleProperty(name).orElse(providers.environmentVariable(name)).getOrElse(default)
+
+  fun quotedBuildConfig(value: String): String =
+    "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
   signingConfigs {
     if (
@@ -41,13 +46,38 @@ android {
     applicationId = "com.lyihub.archiveassistant"
     minSdk = 31
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 2
+    versionName = "1.1.0"
+
+    buildConfigField(
+      "String",
+      "ARCHIVE_DATA_BACKEND",
+      quotedBuildConfig(archiveConfig("ARCHIVE_DATA_BACKEND", "LOCAL")),
+    )
+    buildConfigField(
+      "String",
+      "ARCHIVE_CLOUD_BASE_URL",
+      quotedBuildConfig(archiveConfig("ARCHIVE_CLOUD_BASE_URL")),
+    )
+    buildConfigField(
+      "String",
+      "ARCHIVE_CLOUD_WORKSPACE_ID",
+      quotedBuildConfig(archiveConfig("ARCHIVE_CLOUD_WORKSPACE_ID", "default")),
+    )
+    buildConfigField(
+      "String",
+      "ARCHIVE_CLOUD_API_KEY",
+      quotedBuildConfig(archiveConfig("ARCHIVE_CLOUD_API_KEY")),
+    )
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildTypes {
+    debug {
+      manifestPlaceholders["debugHardwareAccelerated"] =
+        archiveConfig("ARCHIVE_TEST_HARDWARE_ACCELERATED", "true")
+    }
     release {
       isMinifyEnabled = true
       signingConfig = signingConfigs.findByName("release")
@@ -64,6 +94,7 @@ android {
   }
   buildFeatures {
     compose = true
+    buildConfig = true
   }
   packaging {
     jniLibs {
